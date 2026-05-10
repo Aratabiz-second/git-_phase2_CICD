@@ -1,0 +1,14 @@
+terraform.tfvars
+terraform.tfvars.json
+*.auto.tfvars
+*.auto.tfvars.json
+
+tools/
+*.zip
+
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+terraform-run-logs/
+
+.DS_Store

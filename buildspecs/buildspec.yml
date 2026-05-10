@@ -1,0 +1,27 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - aws s3 cp "s3://${ARTIFACT_BUCKET_NAME}/${TERRAFORM_CLI_ZIP_KEY}" terraform.zip
+      - aws s3 cp "s3://${ARTIFACT_BUCKET_NAME}/${APP_TERRAFORM_ZIP_KEY}" app_terraform_phase2.zip
+      - unzip -q -o terraform.zip
+      - cp terraform /usr/bin
+      - unzip -q -o app_terraform_phase2.zip
+  pre_build:
+    commands:
+      - terraform init -backend-config=terraform.tfbackend -plugin-dir plugins
+  build:
+    commands:
+      - terraform plan -no-color -out=./.tfplan
+  post_build:
+    commands:
+      - mv buildspec_tf_apply.yml buildspec.yml
+
+artifacts:
+  base-directory: ${CODEBUILD_SRC_DIR}
+  files:
+    - "**/*"
+    - ".tfplan"
+    - ".terraform.lock.hcl"
+    - ".terraform/**/*"

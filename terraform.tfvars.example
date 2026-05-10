@@ -1,0 +1,9 @@
+accounts = {
+  cicd_account_id = "<cicd-account-id>"
+  app_account_id  = "<app-account-id>"
+}
+
+app_terraform_apply_role_arn = "arn:aws:iam::<app-account-id>:role/<app-terraform-apply-role-name>"
+
+github_owner = "<github-owner>"
+github_repo  = "<github-repo>"

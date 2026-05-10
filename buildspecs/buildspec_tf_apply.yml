@@ -1,0 +1,10 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - cp terraform /usr/bin
+  build:
+    commands:
+      - terraform show ./.tfplan
+      - terraform apply -no-color ./.tfplan

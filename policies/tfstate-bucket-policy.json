@@ -1,0 +1,80 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowTfstateBucketList",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": ["${tfstate_bucket_allowed_principal_arns}"]
+      },
+      "Action": [
+        "s3:GetBucketVersioning",
+        "s3:ListBucket"
+      ],
+      "Resource": "${tfstate_bucket_arn}"
+    },
+    {
+      "Sid": "AllowTfstateObjectAccess",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": ["${tfstate_bucket_allowed_principal_arns}"]
+      },
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject"
+      ],
+      "Resource": "${tfstate_bucket_objects_arn}"
+    },
+    {
+      "Sid": "DenyInsecureTransport",
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": "s3:*",
+      "Resource": [
+        "${tfstate_bucket_arn}",
+        "${tfstate_bucket_objects_arn}"
+      ],
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "false"
+        }
+      }
+    },
+    {
+      "Sid": "DenyUnencryptedObjectUploads",
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": "s3:PutObject",
+      "Resource": "${tfstate_bucket_objects_arn}",
+      "Condition": {
+        "Null": {
+          "s3:x-amz-server-side-encryption": "true"
+        }
+      }
+    },
+    {
+      "Sid": "DenyNonKmsObjectUploads",
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": "s3:PutObject",
+      "Resource": "${tfstate_bucket_objects_arn}",
+      "Condition": {
+        "StringNotEquals": {
+          "s3:x-amz-server-side-encryption": "aws:kms"
+        }
+      }
+    },
+    {
+      "Sid": "DenyWrongKmsKeyObjectUploads",
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": "s3:PutObject",
+      "Resource": "${tfstate_bucket_objects_arn}",
+      "Condition": {
+        "StringNotEquals": {
+          "s3:x-amz-server-side-encryption-aws-kms-key-id": "${tfstate_kms_key_arn}"
+        }
+      }
+    }
+  ]
+}
